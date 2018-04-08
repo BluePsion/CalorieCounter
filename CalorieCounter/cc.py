@@ -83,6 +83,14 @@ def get_pos_int_from_user(prompt):
             print("Please enter in a positive number.")
     return i
 
+def get_bmi(user):
+    metric_weight = user.weight * 0.453592
+    total_height = user.feet + float((user.inches/12))
+    metric_height = total_height * 0.3048
+
+    bmi = metric_weight /(metric_height**2)
+
+    return bmi
 
 
 def settings_menu(user):
@@ -206,6 +214,17 @@ while(True):
     print ("< ",loaded_date.strftime("%A the %d of %B, %Y")," >")
     print ("Calorie goal: ", user.calorie_goal)
     print ("Calories left: ", int(user.calorie_goal) - user.entries[loaded_date].total_calories() )
+    bmi = get_bmi(user)
+    bmidesc = ""
+    if(bmi < 18.5):
+        bmidesc = "underweight"
+    elif(bmi <= 24.9):
+        bmidesc = "healthy"
+    elif(bmi <= 29.9):
+        bmidesc = "overweight"
+    elif(bmi > 29.9):
+        bmidesc = "obese"
+    print ("Your weight: %d BMI: %.1f (%s)" % (user.weight, bmi, bmidesc))
     print ("You are ", int(user.weight) - int(user.goal_weight) , " pounds from your goal weight!")
     #print ("Journal Entry: \n", user.entries[loaded_date].journal)
     print(f"***{user.motd}***")
