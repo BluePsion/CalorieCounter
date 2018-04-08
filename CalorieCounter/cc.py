@@ -55,8 +55,9 @@ def edit_journal(journal):
             pass
         
         if(choice == "3"):
-            confirm = input("You sure you want to delete today's Entry? \"y\" to confirm: ")
-            if(confirm == "y"): journal = ""
+            if sanity_check():
+                journal = ""
+                print("Entry cleared.")
         
         if(choice == "4"):
             return journal
@@ -84,8 +85,8 @@ def get_pos_int_from_user(prompt):
     return i
 
 def get_bmi(user):
-    metric_weight = user.weight * 0.453592
-    total_height = user.feet + float((user.inches/12))
+    metric_weight = float(user.weight) * 0.453592
+    total_height = int(user.feet) + float((float(user.inches)/12))
     metric_height = total_height * 0.3048
 
     bmi = metric_weight /(metric_height**2)
@@ -166,8 +167,9 @@ def view_food_list(foodlist):
                 except IndexError:
                     print("No entry at that number.")
             if(choice == "2"):
-                foodlist = []
-                print("Food list cleared.")
+                if sanity_check(): 
+                    foodlist = []
+                    print("Food list cleared.")
             if(choice == "3"):
                 break
         #return foodlist
@@ -186,6 +188,13 @@ def display_list(list):
                 print((i+1), list[i])
     else:
         print("Nothing here.")
+
+def sanity_check():
+    check = input("Are you sure? y/n: ")
+    if(check == "y"):
+        return True
+    else:
+        return False
 
 user = User(", please create your profile!")
 settings = {}
@@ -224,7 +233,7 @@ while(True):
         bmidesc = "overweight"
     elif(bmi > 29.9):
         bmidesc = "obese"
-    print ("Your weight: %d BMI: %.1f (%s)" % (user.weight, bmi, bmidesc))
+    print ("Your weight: %.1f BMI: %.1f (%s)" % (float(user.weight), bmi, bmidesc))
     print ("You are ", int(user.weight) - int(user.goal_weight) , " pounds from your goal weight!")
     #print ("Journal Entry: \n", user.entries[loaded_date].journal)
     print(f"***{user.motd}***")
