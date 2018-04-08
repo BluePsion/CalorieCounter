@@ -88,10 +88,11 @@ def get_pos_int_from_user(prompt):
 def settings_menu(user):
     while(True):
         print("\n\n\n")
-        print("1. Edit Goals")
-        print("2. Edit MOTD")
-        print("3. Change/Load Profile")
-        print("4. Back")
+        print("1. Change Goals")
+        print("2. Change height")
+        print("3. Edit MOTD")
+        print("4. Change/Create Profile")
+        print("5. Back")
         print("\n")
         choice = input("Your choice: ")
         if(choice == "1"):
@@ -100,8 +101,12 @@ def settings_menu(user):
             user.calorie_goal = get_pos_int_from_user("What is your daily calorie goal? ")
         elif(choice == "2"):
             print("\n")
-            user.motd = input("Enter new MOTD: ")
+            user.feet = get_pos_int_from_user("How many feet tall are you?: ")
+            user.inches = get_pos_int_from_user("How many inches tall are you?: ")
         elif(choice == "3"):
+            print("\n")
+            user.motd = input("Enter new MOTD: ")
+        elif(choice == "4"):
             print("\n")
             user_name = input("Enter in user name or new for a new user: ")
             if(user_name == "new"):
@@ -127,7 +132,7 @@ def settings_menu(user):
                 user = load_user(user_name)
                 if user == None:
                     user = olduser
-        elif(choice == "4"):
+        elif(choice == "5"):
             break
     return user
 
