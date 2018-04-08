@@ -61,6 +61,28 @@ def edit_journal(journal):
         if(choice == "4"):
             return journal
 
+#Traps user until they give us a damn float
+def get_pos_float_from_user(prompt):
+    while(True):
+        try:
+            i = float(input(prompt))
+            if i <= 0 : raise ValueError
+            break
+        except ValueError:
+            print("Please enter in a positive number.")
+    return i
+
+def get_pos_int_from_user(prompt):
+    while(True):
+        try:
+            i = input(prompt)
+            i = int(i)
+            if i <= 0 : raise ValueError
+            break
+        except ValueError:
+            print("Please enter in a positive number.")
+    return i
+
 
 
 def settings_menu(user):
@@ -73,10 +95,9 @@ def settings_menu(user):
         print("\n")
         choice = input("Your choice: ")
         if(choice == "1"):
+            user.goal_weight = get_pos_float_from_user("What is your goal weight?: ")
             print("\n")
-            user.goal_weight = input("What is your new goal weight? ")
-            print("\n")
-            user.calorie_goal = input("What is your new calorie goal? ")
+            user.calorie_goal = get_pos_int_from_user("What is your daily calorie goal? ")
         elif(choice == "2"):
             print("\n")
             user.motd = input("Enter new MOTD: ")
@@ -89,13 +110,13 @@ def settings_menu(user):
                 new_name = input("Enter your name: ")
                 newuser = User(new_name)
                 print("Now to find out how tall you are")
-                newuser.feet = input("How tall are you (feet): ")
-                newuser.inches = input("How tall are you (inches): ")
+                newuser.feet = get_pos_int_from_user("How tall are you (feet): ")
+                newuser.inches = get_pos_int_from_user("How tall are you (inches): ")
                 print("\n")
-                newuser.weight = input("How much do you weigh:  ")
-                newuser.goal_weight = input("What is your goal weight?: ")
+                newuser.weight = get_pos_float_from_user("How much do you weigh:  ")
+                newuser.goal_weight = get_pos_float_from_user("What is your goal weight?: ")
                 print("\n")
-                newuser.calorie_goal = input("What is your daily calorie goal?: ")
+                newuser.calorie_goal = get_pos_int_from_user("What is your daily calorie goal?: ")
                 print("\n")
                 newuser.motd = input("MOTD (Displayed on main menu): ")
                 print("\n")
@@ -193,7 +214,7 @@ while(True):
     choice  = input("Enter in food name or option: ") # < will go back a day and > forward
     if(choice == "1"):
         print("Brave enough to get on a scale huh?")
-        user.weight = input("What is your weight now: ")
+        user.weight = get_pos_float_from_user("What is your weight now: ")
     elif(choice == "3"):
         user.entries[loaded_date].journal = edit_journal(user.entries[loaded_date].journal)
     elif(choice == "2"):
@@ -213,11 +234,9 @@ while(True):
 
     else:
         #TODO check for number
-        calories = input("How many calories: ")
+        calories = get_pos_int_from_user("How many calories?: ")
         user.entries[loaded_date].food.append(Food(choice, calories))
-
-
-
+    
 
 
 
