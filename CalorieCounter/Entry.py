@@ -3,6 +3,7 @@ from Food import Food
 #Defines a day of food for use in a calorie counter
 class Entry():
     def __init__(self, entry_date, calorie_goal):
+        self.version = "1.0"
         self.entry_date = entry_date
         self.food = []
         self.calorie_goal = calorie_goal

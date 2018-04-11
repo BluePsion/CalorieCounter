@@ -26,19 +26,26 @@ def load_user(user_name):
         print("Unable to load profile ", user_name, "file. Error: ", ex, ex.with_traceback)
         user = None
     if not(user==None):
-        user = update_user(user) 
+        user = update_profile(user) 
     return user
 
-def update_user(user):
+def update_profile(user):
+    current = False
     try:
         current = (user.version == version)       
     except AttributeError as ex:
         #no version on user meaning made before versions implemented
         print("User profile has no version, updating...", ex.with_traceback)
-        user.version = version
-        current = True
     if not current:
-        pass
+        user = update_user(user)
+        user = update_entries(user)
+        user.version = version
+    return user
+
+def update_user(user):
+    return user
+
+def update_entries(user):
     return user
     
 def check_for_entry(date_to_load):
