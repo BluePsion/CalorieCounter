@@ -7,11 +7,11 @@ class User:
     def __init__(self,user_name):
         self.user_name = user_name
         self.entries = {} #all entries by user, dictionary with dates for keys, entries for values
-        self.weight = 0.0 #all height/weight measurements are imperial
-        self.feet = 0.0
-        self.inches = 0.0
-        self.goal_weight = 0.0
-        self.calorie_goal = 0.0
+        self.weight = 1.0 #all height/weight measurements are imperial
+        self.feet = 1
+        self.inches = 1
+        self.goal_weight = 1.0
+        self.calorie_goal = 0
         self.start_date = datetime.date.today()
         self.motd = ""
 
