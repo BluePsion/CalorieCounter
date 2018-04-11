@@ -10,6 +10,8 @@ from Food import Food
 #Counts calories and keeps track of calorie/weight goals
 #BluePsion - 2018
 version = "1.0"
+def get_timestamp():
+    return datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 def clear_screen():
     os.system('cls')
@@ -19,6 +21,7 @@ def save_user(user):
         pickle.dump(user,outfile)
 
 def load_user(user_name):
+    user = None
     try:
         with open(user_name + ".pkl",'rb') as infile:
             user = pickle.load(infile)
@@ -33,24 +36,99 @@ def update_profile(user):
     current = False
     try:
         current = (user.version == version)       
-    except AttributeError as ex:
+    except AttributeError:
         #no version on user meaning made before versions implemented
-        print("User profile has no version, updating...", ex.with_traceback)
+        user.version = "BETA"
+        current = False
     if not current:
+        print("User profile has version ", user.version, " now updating profile to current version (" + version + ").")
         user = update_user(user)
         user = update_entries(user)
-        user.version = version
     return user
 
 def update_user(user):
+    #TODO have to make some corrupted data to test this...
+    user.version = version
+    try:
+        user.user_name    
+    except AttributeError:
+        #no version on user meaning made before versions implemented
+        print("User name corrupted, changing to Default + TimeStamp")
+        user.user_name = "Default" + get_timestamp
+
+    try:
+        user.weight
+        if(user.weight == 0): raise AttributeError
+    except AttributeError:
+        print("Weight value corrupted, setting to 1.0")
+        user.weight = 1.0
+    
+    try:
+        user.goal_weight
+        if(user.weight == 0): raise AttributeError
+    except AttributeError:
+        print("Goal weight corrupted, setting to 1.0")
+        user.goal_weight = 1.0
+    
+    try:
+        user.feet
+    except AttributeError:
+        print("User feet corrupted, setting to 1")
+        user.feet = 1
+    
+    try:
+        user.inches
+    except AttributeError:
+        print("User inches corrupted, setting to 1")
+        user.feet = 1
+
+    try:
+        user.calorie_goal
+    except AttributeError:
+        print("User calorie goal corrupted, setting to 1")
+        user.calorie_goal = 1
+    
+    try:
+        user.start_date
+    except AttributeError:
+        print("User start date corrupted, setting to now.")
+        user.start_date = datetime.date.today()
+    
+    try:
+        user.motd
+    except AttributeError:
+        print("MOTD corrupted, setting to \"Do your best!\"")
+        user.motd = "Do your best!"
     return user
 
+#check entry attributes to work with current version.
 def update_entries(user):
+    #update to 1.0
+    for d in user.entries.keys():
+        print(user.entries[d])
+        try:
+            user.entries[d].goal_weight
+            if user.entries[d].goal_weight == 0: raise AttributeError
+        except AttributeError:
+            print("Following Entry has no goal weight, using goal weight user currently has.")
+            print("    ", str(user.entries[d]))
+            user.entries[d].goal_weight = user.goal_weight
+        
+        try:
+            user.entries[d].weight
+            if user.entries[d].weight == 0: raise AttributeError
+        except AttributeError:
+            print("\nFollowing Entry has no weight, using weight user currently has.")
+            print("    ", str(user.entries[d]))
+            print("\n")
+            user.entries[d].weight = user.weight
     return user
-    
+
 def check_for_entry(date_to_load):
     if not (loaded_date in user.entries):
         user.entries[loaded_date] = Entry(loaded_date,user.calorie_goal)
+        user.entries[loaded_date].weight = user.weight
+        user.entries[loaded_date].goal_weight = user.goal_weight
 
 def edit_journal(journal):
     while(True):
@@ -105,9 +183,9 @@ def get_pos_int_from_user(prompt):
             print("Please enter in a positive number.")
     return i
 
-def get_bmi(user):
-    metric_weight = float(user.weight) * 0.453592
-    total_height = int(user.feet) + float((float(user.inches)/12))
+def get_bmi(feet,inches,weight):
+    metric_weight = float(weight) * 0.453592
+    total_height = int(feet) + float((float(inches)/12))
     metric_height = total_height * 0.3048
 
     bmi = metric_weight /(metric_height**2)
@@ -126,9 +204,16 @@ def settings_menu(user):
         print("\n")
         choice = input("Your choice: ")
         if(choice == "1"):
-            user.goal_weight = get_pos_float_from_user("What is your goal weight?: ")
-            print("\n")
-            user.calorie_goal = get_pos_int_from_user("What is your daily calorie goal? ")
+            if(loaded_date == datetime.date.today()):
+                user.goal_weight = get_pos_float_from_user("What is your goal weight?: ")
+                user.calorie_goal = get_pos_int_from_user("What is your daily calorie goal?: ")
+                user.entries[loaded_date].goal_weight = user.goal_weight
+                user.entries[loaded_date].calorie_goal = user.calorie_goal
+            else:
+                print("Do you want to change the goals for this date in the past?")
+                if(sanity_check):
+                    user.entries[loaded_date].goal_weight = get_pos_float_from_user("What is your goal weight?: ")
+                    user.entries[loaded_date].calorie_goal = get_pos_int_from_user("What is your daily calorie goal?: ")
         elif(choice == "2"):
             print("\n")
             user.feet = get_pos_int_from_user("How many feet tall are you?: ")
@@ -241,10 +326,11 @@ while(True):
     print("\n")
     print("\n")
     print(f"Welcome {user.user_name}!")
+    print("Entry for: ")
     print ("< ",loaded_date.strftime("%A the %d of %B, %Y")," >")
-    print ("Calorie goal: ", user.calorie_goal)
-    print ("Calories left: ", int(user.calorie_goal) - user.entries[loaded_date].total_calories() )
-    bmi = get_bmi(user)
+    print ("Calorie goal: ", user.entries[loaded_date].calorie_goal)
+    print ("Calories left: ", int(user.entries[loaded_date].calorie_goal) - user.entries[loaded_date].total_calories() )
+    bmi = get_bmi(user.feet,user.inches,user.entries[loaded_date].weight)
     bmidesc = ""
     if(bmi < 18.5):
         bmidesc = "underweight"
@@ -254,8 +340,9 @@ while(True):
         bmidesc = "overweight"
     elif(bmi > 29.9):
         bmidesc = "obese"
-    print ("Your weight: %.1f BMI: %.1f (%s)" % (float(user.weight), bmi, bmidesc))
-    print ("You are ", int(user.weight) - int(user.goal_weight) , " pounds from your goal weight!")
+    print ("Goal weight: %.1f" % (float(user.entries[loaded_date].goal_weight)))
+    print ("Your weight: %.1f BMI: %.1f (%s)" % (float(user.entries[loaded_date].weight), bmi, bmidesc))
+    print ("You are ", int(user.entries[loaded_date].weight) - int(user.entries[loaded_date].goal_weight) , " pounds from your goal weight!")
     #print ("Journal Entry: \n", user.entries[loaded_date].journal)
     print(f"***{user.motd}***")
     print("1. Weigh-In")
@@ -267,8 +354,15 @@ while(True):
     print("\n")
     choice  = input("Enter in food name or option: ") # < will go back a day and > forward
     if(choice == "1"):
-        print("Brave enough to get on a scale huh?")
-        user.weight = get_pos_float_from_user("What is your weight now: ")
+        if(loaded_date == datetime.date.today()):
+            print("Brave enough to get on a scale huh?")
+            user.weight = get_pos_float_from_user("What is your weight now: ")
+            user.entries[loaded_date].weight = user.weight
+        else:
+            print("Do you want to change the weight that you were on this date?")
+            if(sanity_check):
+                user.entries[loaded_date].weight = get_pos_float_from_user("What was your weight? ")
+        
     elif(choice == "3"):
         user.entries[loaded_date].journal = edit_journal(user.entries[loaded_date].journal)
     elif(choice == "2"):
