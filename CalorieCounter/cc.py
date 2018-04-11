@@ -9,6 +9,7 @@ from Food import Food
 #cc.py (Calorie Counter)
 #Counts calories and keeps track of calorie/weight goals
 #BluePsion - 2018
+version = "1.0"
 
 def clear_screen():
     os.system('cls')
@@ -24,9 +25,22 @@ def load_user(user_name):
     except Exception as ex:
         print("Unable to load profile ", user_name, "file. Error: ", ex, ex.with_traceback)
         user = None
-    
+    if not(user==None):
+        user = update_user(user) 
     return user
 
+def update_user(user):
+    try:
+        current = (user.version == version)       
+    except AttributeError as ex:
+        #no version on user meaning made before versions implemented
+        print("User profile has no version, updating...", ex.with_traceback)
+        user.version = version
+        current = True
+    if not current:
+        pass
+    return user
+    
 def check_for_entry(date_to_load):
     if not (loaded_date in user.entries):
         user.entries[loaded_date] = Entry(loaded_date,user.calorie_goal)

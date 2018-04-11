@@ -5,6 +5,7 @@ import pickle
 
 class User:
     def __init__(self,user_name):
+        self.version = "1.0"
         self.user_name = user_name
         self.entries = {} #all entries by user, dictionary with dates for keys, entries for values
         self.weight = 1.0 #all height/weight measurements are imperial
