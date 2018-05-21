@@ -161,6 +161,17 @@ def edit_journal(journal):
         if(choice == "4"):
             return journal
 
+def is_pos_float(var):
+    try:
+        v = float(var)
+        if v <= 0 : raise ValueError
+        return True
+    except ValueError:
+        return False
+    print("Something terrible happened in is_pos_float")
+    return False
+
+
 #Traps user until they give us a damn float
 def get_pos_float_from_user(prompt):
     while(True):
@@ -182,6 +193,17 @@ def get_pos_int_from_user(prompt):
         except ValueError:
             print("Please enter in a positive number.")
     return i
+
+def is_pos_int(var):
+    try:
+        v = int(var)
+        if v <= 0 : raise ValueError
+        return True
+    except ValueError:
+        return False
+    print("Something terrible happened in is_pos_int")
+    return False
+
 
 def get_bmi(feet,inches,weight):
     metric_weight = float(weight) * 0.453592
@@ -319,6 +341,23 @@ except Exception as ex:
 loaded_date = datetime.date.today()
 check_for_entry(loaded_date)
 
+if len(sys.argv) == 2:
+    #print("One argument passed.")
+
+    if sys.argv[1] =='-cc':
+        print (user.entries[loaded_date].total_calories())
+    
+    if sys.argv[1] == '-cl':
+        print (int(user.entries[loaded_date].calorie_goal) - user.entries[loaded_date].total_calories())
+ 
+    if sys.argv[1] == '-cg':
+        print (user.entries[loaded_date].calorie_goal)
+
+    quit()
+elif len(sys.argv) > 2:
+    print("I don't recognize those arguments. Please seek help.")
+    quit()
+
 while(True):
     save_user(user) #auto-save ;)
     check_for_entry(loaded_date)
@@ -382,8 +421,12 @@ while(True):
 
     else:
         #TODO check for number
-        calories = get_pos_int_from_user("How many calories?: ")
-        user.entries[loaded_date].food.append(Food(choice, calories))
+        calories = input("How many calories? (x to cancel) ")
+        if calories is not "x" and is_pos_int(calories):
+            user.entries[loaded_date].food.append(Food(choice, calories))
+            print("Food added to your list!")
+        else:
+            print("Please try again, make sure you use a positive whole number of calories.")
     
 
 
