@@ -341,6 +341,7 @@ except Exception as ex:
 loaded_date = datetime.date.today()
 check_for_entry(loaded_date)
 
+#Handle command line arguments.
 if len(sys.argv) == 2:
     #print("One argument passed.")
 
