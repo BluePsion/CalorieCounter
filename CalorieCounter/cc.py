@@ -355,7 +355,21 @@ if len(sys.argv) == 2:
         print (user.entries[loaded_date].calorie_goal)
 
     quit()
-elif len(sys.argv) > 2:
+
+
+#user wants to add food.
+if len(sys.argv) == 3:
+
+    if not is_pos_int(sys.argv[2]):
+        print("Adding Food: cc.py <foodname> <calories>.  Calories must be a whole positive number.")
+        quit()
+
+    user.entries[loaded_date].food.append(Food(sys.argv[1],sys.argv[2]))
+    save_user(user)
+    quit();    
+    
+
+elif len(sys.argv) > 3:
     print("I don't recognize those arguments. Please seek help.")
     quit()
 
